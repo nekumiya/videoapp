@@ -45,6 +45,11 @@ public class Video implements Serializable {
     private Integer categoryId;
 
     private String username; //上传视频用户的用户名
+
+    private String collectStatus; //收藏状态 ： 1.已收藏 2.未收藏
+
+    private String praiseStatus; //点赞状态:  1.已点赞 2.未点赞
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -159,6 +164,22 @@ public class Video implements Serializable {
         this.username = username;
     }
 
+    public String getCollectStatus() {
+        return collectStatus;
+    }
+
+    public void setCollectStatus(String collectStatus) {
+        this.collectStatus = collectStatus;
+    }
+
+    public String getPraiseStatus() {
+        return praiseStatus;
+    }
+
+    public void setPraiseStatus(String praiseStatus) {
+        this.praiseStatus = praiseStatus;
+    }
+
     @Override
     public String toString() {
         return "Video{" +
@@ -176,6 +197,8 @@ public class Video implements Serializable {
                 ", userAccount='" + userAccount + '\'' +
                 ", categoryId=" + categoryId +
                 ", username='" + username + '\'' +
+                ", collectStatus='" + collectStatus + '\'' +
+                ", praiseStatus='" + praiseStatus + '\'' +
                 '}';
     }
 }

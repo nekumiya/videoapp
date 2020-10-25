@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kexie.videoapp.mbg.mapper.PraiseMapper">
+  <resultMap id="BaseResultMap" type="com.kexie.videoapp.mbg.model.Praise">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="video_id" jdbcType="INTEGER" property="videoId" />
+    <result column="user_account" jdbcType="VARCHAR" property="userAccount" />
+    <result column="praise_time" jdbcType="TIMESTAMP" property="praiseTime" />
+    <result column="praise_status" jdbcType="VARCHAR" property="praiseStatus" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, video_id, user_account, praise_time, praise_status
+  </sql>
+  <select id="selectByExample" parameterType="com.kexie.videoapp.mbg.model.PraiseExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from praise
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from praise
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from praise
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.kexie.videoapp.mbg.model.PraiseExample">
+    delete from praise
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.kexie.videoapp.mbg.model.Praise">
+    insert into praise (id, video_id, user_account, 
+      praise_time, praise_status)
+    values (#{id,jdbcType=INTEGER}, #{videoId,jdbcType=INTEGER}, #{userAccount,jdbcType=VARCHAR}, 
+      #{praiseTime,jdbcType=TIMESTAMP}, #{praiseStatus,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.kexie.videoapp.mbg.model.Praise">
+    insert into praise
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="videoId != null">
+        video_id,
+      </if>
+      <if test="userAccount != null">
+        user_account,
+      </if>
+      <if test="praiseTime != null">
+        praise_time,
+      </if>
+      <if test="praiseStatus != null">
+        praise_status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="videoId != null">
+        #{videoId,jdbcType=INTEGER},
+      </if>
+      <if test="userAccount != null">
+        #{userAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="praiseTime != null">
+        #{praiseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="praiseStatus != null">
+        #{praiseStatus,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.kexie.videoapp.mbg.model.PraiseExample" resultType="java.lang.Long">
+    select count(*) from praise
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update praise
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.videoId != null">
+        video_id = #{record.videoId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userAccount != null">
+        user_account = #{record.userAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="record.praiseTime != null">
+        praise_time = #{record.praiseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.praiseStatus != null">
+        praise_status = #{record.praiseStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update praise
+    set id = #{record.id,jdbcType=INTEGER},
+      video_id = #{record.videoId,jdbcType=INTEGER},
+      user_account = #{record.userAccount,jdbcType=VARCHAR},
+      praise_time = #{record.praiseTime,jdbcType=TIMESTAMP},
+      praise_status = #{record.praiseStatus,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.kexie.videoapp.mbg.model.Praise">
+    update praise
+    <set>
+      <if test="videoId != null">
+        video_id = #{videoId,jdbcType=INTEGER},
+      </if>
+      <if test="userAccount != null">
+        user_account = #{userAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="praiseTime != null">
+        praise_time = #{praiseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="praiseStatus != null">
+        praise_status = #{praiseStatus,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.kexie.videoapp.mbg.model.Praise">
+    update praise
+    set video_id = #{videoId,jdbcType=INTEGER},
+      user_account = #{userAccount,jdbcType=VARCHAR},
+      praise_time = #{praiseTime,jdbcType=TIMESTAMP},
+      praise_status = #{praiseStatus,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

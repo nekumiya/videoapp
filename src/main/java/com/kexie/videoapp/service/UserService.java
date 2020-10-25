@@ -1,8 +1,11 @@
 package com.kexie.videoapp.service;
 
+import com.kexie.videoapp.condition.CollectCondition;
+import com.kexie.videoapp.condition.PraiseCondition;
 import com.kexie.videoapp.condition.VideoCondition;
 import com.kexie.videoapp.dto.UserRegisterParam;
 import com.kexie.videoapp.mbg.model.Collect;
+import com.kexie.videoapp.mbg.model.Praise;
 import com.kexie.videoapp.mbg.model.User;
 import com.kexie.videoapp.mbg.model.Video;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,4 +31,14 @@ public interface UserService {
     List<Video> selectVideos(VideoCondition videoCondition, Integer pageNum, Integer pageSize);
 
     Integer createCollect(Collect collect);
+
+    Integer createPraise(Praise praise);
+
+    Video selectVideo(VideoCondition videoCondition);
+
+    Collect selectCollect(CollectCondition collectCondition);
+
+    Praise selectPraise(PraiseCondition praiseCondition);
+
+    Integer updateVideo(Video video);
 }

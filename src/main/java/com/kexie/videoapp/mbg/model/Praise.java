@@ -4,23 +4,23 @@ import io.swagger.annotations.ApiModelProperty;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Collect implements Serializable {
+public class Praise implements Serializable {
     @ApiModelProperty(value = "主键")
     private Integer id;
 
-    @ApiModelProperty(value = "收藏对象id")
+    @ApiModelProperty(value = "点赞对象id")
     private Integer videoId;
 
     @ApiModelProperty(value = "用户account")
     private String userAccount;
 
-    @ApiModelProperty(value = "收藏时间")
-    private Date collectTime;
+    @ApiModelProperty(value = "点赞时间")
+    private Date praiseTime;
 
-    @ApiModelProperty(value = "收藏状态:  1.已收藏   2.取消收藏")
-    private String collectStatus;
+    @ApiModelProperty(value = "点赞状态： 1.已点赞  2. 取消点赞")
+    private String praiseStatus;
 
-    private Integer collectNum; //已收藏次数
+    private Integer praiseNum; //已点赞次数
 
     private static final long serialVersionUID = 1L;
 
@@ -48,39 +48,39 @@ public class Collect implements Serializable {
         this.userAccount = userAccount;
     }
 
-    public Date getCollectTime() {
-        return collectTime;
+    public Date getPraiseTime() {
+        return praiseTime;
     }
 
-    public void setCollectTime(Date collectTime) {
-        this.collectTime = collectTime;
+    public void setPraiseTime(Date praiseTime) {
+        this.praiseTime = praiseTime;
     }
 
-    public String getCollectStatus() {
-        return collectStatus;
+    public String getPraiseStatus() {
+        return praiseStatus;
     }
 
-    public void setCollectStatus(String collectStatus) {
-        this.collectStatus = collectStatus;
+    public void setPraiseStatus(String praiseStatus) {
+        this.praiseStatus = praiseStatus;
     }
 
-    public Integer getCollectNum() {
-        return collectNum;
+    public Integer getPraiseNum() {
+        return praiseNum;
     }
 
-    public void setCollectNum(Integer collectNum) {
-        this.collectNum = collectNum;
+    public void setPraiseNum(Integer praiseNum) {
+        this.praiseNum = praiseNum;
     }
 
     @Override
     public String toString() {
-        return "Collect{" +
+        return "Praise{" +
                 "id=" + id +
                 ", videoId=" + videoId +
                 ", userAccount='" + userAccount + '\'' +
-                ", collectTime=" + collectTime +
-                ", collectStatus='" + collectStatus + '\'' +
-                ", collectNum=" + collectNum +
+                ", praiseTime=" + praiseTime +
+                ", praiseStatus='" + praiseStatus + '\'' +
+                ", praiseNum=" + praiseNum +
                 '}';
     }
 }

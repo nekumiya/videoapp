@@ -3,11 +3,14 @@ package com.kexie.videoapp.controller;
 import com.kexie.videoapp.common.api.CommonPage;
 import com.kexie.videoapp.common.api.CommonResult;
 import com.kexie.videoapp.common.utils.StringsUtils;
+import com.kexie.videoapp.condition.CollectCondition;
+import com.kexie.videoapp.condition.PraiseCondition;
 import com.kexie.videoapp.condition.VideoCondition;
 import com.kexie.videoapp.dto.CommonUserDetails;
 import com.kexie.videoapp.dto.UserLoginParam;
 import com.kexie.videoapp.dto.UserRegisterParam;
 import com.kexie.videoapp.mbg.model.Collect;
+import com.kexie.videoapp.mbg.model.Praise;
 import com.kexie.videoapp.mbg.model.User;
 import com.kexie.videoapp.mbg.model.Video;
 import com.kexie.videoapp.service.UserService;
@@ -126,6 +129,7 @@ public class UserController {
                                      @RequestParam(value = "pageSize",defaultValue = "5")
                                      @ApiParam("每页数量") Integer pageSize){
 
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         if (StringsUtils.isNotEmpty(videoCondition.getTime())){
             try {
@@ -148,7 +152,7 @@ public class UserController {
         return CommonResult.success(CommonPage.restPage(videos),"操作成功");
     }
 
-    @ApiOperation("点击视频收藏接口")
+    @ApiOperation("视频收藏接口")
     @RequestMapping(value = "/collectVideo.do",method = RequestMethod.POST)
     @ResponseBody
     public CommonResult collectVideo(@RequestBody Collect collect){
@@ -158,7 +162,7 @@ public class UserController {
         collect.setCollectTime(new Date());
 
         Integer count = userService.createCollect(collect);
-
+        collect.setCollectNum(collect.getCollectNum() + 1);
         if (count == 1) {
             commonResult = CommonResult.success(collect,"操作成功");
             LOGGER.debug("收藏成功 ： {}",collect);
@@ -168,6 +172,64 @@ public class UserController {
         }
         return commonResult;
     }
+
+
+    @ApiOperation("视频点赞接口")
+    @RequestMapping(value = "/praiseVideo.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult praiseVideo(@RequestBody Praise praise){
+        CommonResult commonResult;
+        String account = getCommonUserDetails().getAccount();
+        praise.setUserAccount(account);
+        praise.setPraiseTime(new Date());
+
+        Integer count = userService.createPraise(praise);
+        praise.setPraiseNum(praise.getPraiseNum() + 1);
+        if (count == 1) {
+            commonResult = CommonResult.success(praise,"操作成功");
+            LOGGER.debug("点赞成功 ： {}",praise);
+        }else {
+            commonResult = CommonResult.failed("操作失败");
+            LOGGER.debug("点赞失败 ： {}",praise);
+        }
+        return commonResult;
+    }
+
+    @ApiOperation("进入视频详情接口")
+    @RequestMapping(value = "/playVideo.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult playVideo(VideoCondition videoCondition){
+
+        Video video =  userService.selectVideo(videoCondition);
+        String userAccount = video.getUserAccount();
+        User user = userService.getUserByAccount(userAccount);
+        String name = user.getUsername();
+        video.setUsername(name);
+
+
+        CollectCondition collectCondition = new CollectCondition();
+        collectCondition.setUserAccount(userAccount);
+        collectCondition.setVideoId(video.getId());
+        Collect collect = userService.selectCollect(collectCondition);
+
+        PraiseCondition praiseCondition = new PraiseCondition();
+        praiseCondition.setUserAccount(userAccount);
+        praiseCondition.setVideoId(video.getId());
+        Praise praise = userService.selectPraise(praiseCondition);
+
+        video.setCollectStatus(collect.getCollectStatus());
+        video.setPraiseStatus(praise.getPraiseStatus());
+
+        Integer watchNum = video.getWatchNum();
+        video.setWatchNum(watchNum + 1);
+
+        Integer count = userService.updateVideo(video);
+
+
+        return CommonResult.success(video,"操作成功");
+    }
+
+
 
 
     private static CommonUserDetails getCommonUserDetails(){

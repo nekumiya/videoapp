@@ -4,9 +4,12 @@ import com.github.pagehelper.PageHelper;
 import com.kexie.videoapp.common.api.CommonResult;
 import com.kexie.videoapp.common.utils.JwtTokenUtil;
 import com.kexie.videoapp.common.utils.StringsUtils;
+import com.kexie.videoapp.condition.CollectCondition;
+import com.kexie.videoapp.condition.PraiseCondition;
 import com.kexie.videoapp.condition.VideoCondition;
 import com.kexie.videoapp.dto.UserRegisterParam;
 import com.kexie.videoapp.mbg.mapper.CollectMapper;
+import com.kexie.videoapp.mbg.mapper.PraiseMapper;
 import com.kexie.videoapp.mbg.mapper.UserMapper;
 import com.kexie.videoapp.mbg.mapper.VideoMapper;
 import com.kexie.videoapp.mbg.model.*;
@@ -59,6 +62,8 @@ public class UserServiceImpl implements UserService {
     private VideoMapper videoMapper;
     @Autowired
     private CollectMapper collectMapper;
+    @Autowired
+    private PraiseMapper praiseMapper;
 
 
     @Override
@@ -245,7 +250,11 @@ public class UserServiceImpl implements UserService {
             return collectMapper.insertSelective(collect);
         }else if (collect.getCollectStatus().equals("2")){
 
-            video.setCollectNum(collect.getCollectNum() - 1);
+            int i = collect.getCollectNum() - 1;
+            if ( i <= 0){
+                i = 0;
+            }
+            video.setCollectNum(i);
             videoMapper.updateByPrimaryKeySelective(video);
 
             CollectExample example = new CollectExample();
@@ -258,4 +267,81 @@ public class UserServiceImpl implements UserService {
         }
         return 0;
     }
+
+    @Override
+    public Integer createPraise(Praise praise) {
+        Video video = new Video();
+        video.setId(praise.getVideoId());
+
+
+        if (praise.getPraiseStatus().equals("1")){
+
+            video.setPraiseNum(praise.getPraiseNum() + 1);
+            videoMapper.updateByPrimaryKeySelective(video);
+
+            return praiseMapper.insertSelective(praise);
+        }else if (praise.getPraiseStatus().equals("2")){
+
+            int i = praise.getPraiseNum() - 1;
+            if ( i <= 0){
+                i = 0;
+            }
+            video.setPraiseNum(i);
+            videoMapper.updateByPrimaryKeySelective(video);
+
+            PraiseExample example = new PraiseExample();
+            PraiseExample.Criteria criteria = example.createCriteria();
+            criteria.andUserAccountEqualTo(praise.getUserAccount());
+            criteria.andVideoIdEqualTo(praise.getVideoId());
+
+            return praiseMapper.deleteByExample(example);
+
+        }
+        return 0;
+
+    }
+
+    @Override
+    public Video selectVideo(VideoCondition videoCondition) {
+        return videoMapper.selectByPrimaryKey(videoCondition.getId());
+    }
+
+    @Override
+    public Collect selectCollect(CollectCondition collectCondition) {
+
+        CollectExample example = new CollectExample();
+        CollectExample.Criteria criteria = example.createCriteria();
+        criteria.andUserAccountEqualTo(collectCondition.getUserAccount());
+        criteria.andVideoIdEqualTo(collectCondition.getVideoId());
+
+        List<Collect> collectList = collectMapper.selectByExample(example);
+        if (collectList != null && collectList.size()>0){
+            return collectList.get(0);
+        }
+
+        return  null;
+
+    }
+
+    @Override
+    public Praise selectPraise(PraiseCondition praiseCondition) {
+        PraiseExample example = new PraiseExample();
+        PraiseExample.Criteria criteria = example.createCriteria();
+        criteria.andUserAccountEqualTo(praiseCondition.getUserAccount());
+        criteria.andVideoIdEqualTo(praiseCondition.getVideoId());
+
+        List<Praise> praiseList = praiseMapper.selectByExample(example);
+        if (praiseList != null && praiseList.size()>0){
+            return praiseList.get(0);
+        }
+
+        return  null;
+
+    }
+
+    @Override
+    public Integer updateVideo(Video video) {
+        return videoMapper.updateByPrimaryKeySelective(video);
+    }
+
 }
