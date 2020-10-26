@@ -56,6 +56,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Value("${jwt.tokenHead}")
     private String tokenHead;
+    @Value("${web.upload-path}")
+    private String uploadPath;
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -144,9 +146,7 @@ public class UserServiceImpl implements UserService {
 
         String videoFileType = videoFileName.substring(videoFileName.lastIndexOf(".") + 1);
 
-        String filePath = "C:\\Users\\Nekumiya\\Desktop\\videoapp\\video\\"
-                               + user.getUsername() + "\\"
-                               + UUID.randomUUID().toString() + "\\";
+        String filePath = uploadPath + "video\\"+ user.getUsername() + "\\" + UUID.randomUUID().toString() + "\\";
 
 
         File videoDestFile = new File(filePath + videoFileName);
