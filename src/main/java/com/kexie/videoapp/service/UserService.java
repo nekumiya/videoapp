@@ -10,6 +10,7 @@ import com.kexie.videoapp.mbg.model.User;
 import com.kexie.videoapp.mbg.model.Video;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -26,7 +27,7 @@ public interface UserService {
 
     String login(String username,String password);
 
-    int uploadVideo(MultipartFile videoFile, MultipartFile imageFile, Video video);
+    int uploadVideo(MultipartFile videoFile, MultipartFile imageFile, Video video, HttpServletRequest request);
 
     List<Video> selectVideos(VideoCondition videoCondition, Integer pageNum, Integer pageSize);
 

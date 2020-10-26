@@ -445,6 +445,76 @@ public class VideoExample {
             return (Criteria) this;
         }
 
+        public Criteria andVideoPathIsNull() {
+            addCriterion("video_path is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathIsNotNull() {
+            addCriterion("video_path is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathEqualTo(String value) {
+            addCriterion("video_path =", value, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathNotEqualTo(String value) {
+            addCriterion("video_path <>", value, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathGreaterThan(String value) {
+            addCriterion("video_path >", value, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathGreaterThanOrEqualTo(String value) {
+            addCriterion("video_path >=", value, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathLessThan(String value) {
+            addCriterion("video_path <", value, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathLessThanOrEqualTo(String value) {
+            addCriterion("video_path <=", value, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathLike(String value) {
+            addCriterion("video_path like", value, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathNotLike(String value) {
+            addCriterion("video_path not like", value, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathIn(List<String> values) {
+            addCriterion("video_path in", values, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathNotIn(List<String> values) {
+            addCriterion("video_path not in", values, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathBetween(String value1, String value2) {
+            addCriterion("video_path between", value1, value2, "videoPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andVideoPathNotBetween(String value1, String value2) {
+            addCriterion("video_path not between", value1, value2, "videoPath");
+            return (Criteria) this;
+        }
+
         public Criteria andVideoUrlIsNull() {
             addCriterion("video_url is null");
             return (Criteria) this;

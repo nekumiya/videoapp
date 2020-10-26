@@ -7,6 +7,7 @@
     <result column="labels" jdbcType="VARCHAR" property="labels" />
     <result column="description" jdbcType="VARCHAR" property="description" />
     <result column="cover_image" jdbcType="VARCHAR" property="coverImage" />
+    <result column="video_path" jdbcType="VARCHAR" property="videoPath" />
     <result column="video_url" jdbcType="VARCHAR" property="videoUrl" />
     <result column="video_type" jdbcType="VARCHAR" property="videoType" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
@@ -75,7 +76,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, title, labels, description, cover_image, video_url, video_type, update_time, 
+    id, title, labels, description, cover_image, video_path, video_url, video_type, update_time, 
     watch_num, collect_num, praise_num, user_account, category_id
   </sql>
   <select id="selectByExample" parameterType="com.kexie.videoapp.mbg.model.VideoExample" resultMap="BaseResultMap">
@@ -110,15 +111,15 @@
   </delete>
   <insert id="insert" parameterType="com.kexie.videoapp.mbg.model.Video">
     insert into video (id, title, labels, 
-      description, cover_image, video_url, 
-      video_type, update_time, watch_num, 
-      collect_num, praise_num, user_account, 
-      category_id)
+      description, cover_image, video_path, 
+      video_url, video_type, update_time, 
+      watch_num, collect_num, praise_num, 
+      user_account, category_id)
     values (#{id,jdbcType=INTEGER}, #{title,jdbcType=VARCHAR}, #{labels,jdbcType=VARCHAR}, 
-      #{description,jdbcType=VARCHAR}, #{coverImage,jdbcType=VARCHAR}, #{videoUrl,jdbcType=VARCHAR}, 
-      #{videoType,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, #{watchNum,jdbcType=INTEGER}, 
-      #{collectNum,jdbcType=INTEGER}, #{praiseNum,jdbcType=INTEGER}, #{userAccount,jdbcType=VARCHAR}, 
-      #{categoryId,jdbcType=INTEGER})
+      #{description,jdbcType=VARCHAR}, #{coverImage,jdbcType=VARCHAR}, #{videoPath,jdbcType=VARCHAR}, 
+      #{videoUrl,jdbcType=VARCHAR}, #{videoType,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{watchNum,jdbcType=INTEGER}, #{collectNum,jdbcType=INTEGER}, #{praiseNum,jdbcType=INTEGER}, 
+      #{userAccount,jdbcType=VARCHAR}, #{categoryId,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.kexie.videoapp.mbg.model.Video">
     insert into video
@@ -137,6 +138,9 @@
       </if>
       <if test="coverImage != null">
         cover_image,
+      </if>
+      <if test="videoPath != null">
+        video_path,
       </if>
       <if test="videoUrl != null">
         video_url,
@@ -178,6 +182,9 @@
       </if>
       <if test="coverImage != null">
         #{coverImage,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPath != null">
+        #{videoPath,jdbcType=VARCHAR},
       </if>
       <if test="videoUrl != null">
         #{videoUrl,jdbcType=VARCHAR},
@@ -229,6 +236,9 @@
       <if test="record.coverImage != null">
         cover_image = #{record.coverImage,jdbcType=VARCHAR},
       </if>
+      <if test="record.videoPath != null">
+        video_path = #{record.videoPath,jdbcType=VARCHAR},
+      </if>
       <if test="record.videoUrl != null">
         video_url = #{record.videoUrl,jdbcType=VARCHAR},
       </if>
@@ -265,6 +275,7 @@
       labels = #{record.labels,jdbcType=VARCHAR},
       description = #{record.description,jdbcType=VARCHAR},
       cover_image = #{record.coverImage,jdbcType=VARCHAR},
+      video_path = #{record.videoPath,jdbcType=VARCHAR},
       video_url = #{record.videoUrl,jdbcType=VARCHAR},
       video_type = #{record.videoType,jdbcType=VARCHAR},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
@@ -291,6 +302,9 @@
       </if>
       <if test="coverImage != null">
         cover_image = #{coverImage,jdbcType=VARCHAR},
+      </if>
+      <if test="videoPath != null">
+        video_path = #{videoPath,jdbcType=VARCHAR},
       </if>
       <if test="videoUrl != null">
         video_url = #{videoUrl,jdbcType=VARCHAR},
@@ -325,6 +339,7 @@
       labels = #{labels,jdbcType=VARCHAR},
       description = #{description,jdbcType=VARCHAR},
       cover_image = #{coverImage,jdbcType=VARCHAR},
+      video_path = #{videoPath,jdbcType=VARCHAR},
       video_url = #{videoUrl,jdbcType=VARCHAR},
       video_type = #{videoType,jdbcType=VARCHAR},
       update_time = #{updateTime,jdbcType=TIMESTAMP},

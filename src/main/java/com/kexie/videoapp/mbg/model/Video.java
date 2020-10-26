@@ -21,6 +21,9 @@ public class Video implements Serializable {
     private String coverImage;
 
     @ApiModelProperty(value = "视频文件路径")
+    private String videoPath;
+
+    @ApiModelProperty(value = "视频播放路径")
     private String videoUrl;
 
     @ApiModelProperty(value = "视频文件类型")
@@ -90,6 +93,14 @@ public class Video implements Serializable {
 
     public void setCoverImage(String coverImage) {
         this.coverImage = coverImage;
+    }
+
+    public String getVideoPath() {
+        return videoPath;
+    }
+
+    public void setVideoPath(String videoPath) {
+        this.videoPath = videoPath;
     }
 
     public String getVideoUrl() {

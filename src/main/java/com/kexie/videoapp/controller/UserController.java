@@ -27,6 +27,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -99,7 +100,7 @@ public class UserController {
     @ApiOperation("上传视频文件")
     @RequestMapping(value = "/uploadVideo.do",method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult uploadVideo(@RequestParam("videoFile")MultipartFile videoFile, @RequestParam("imageFile") MultipartFile imageFile,Video video){
+    public CommonResult uploadVideo(@RequestParam("videoFile")MultipartFile videoFile, @RequestParam("imageFile") MultipartFile imageFile, Video video, HttpServletRequest request){
         CommonResult commonResult;
 
         String account = getCommonUserDetails().getAccount();
@@ -109,7 +110,7 @@ public class UserController {
             return CommonResult.failed("上传失败，文件是空的！！！");
         }
 
-        int count = userService.uploadVideo(videoFile,imageFile,video);
+        int count = userService.uploadVideo(videoFile,imageFile,video,request);
         if (count == 1){
             commonResult = CommonResult.success("上传文件成功");
             LOGGER.debug("upload File success");
@@ -200,25 +201,39 @@ public class UserController {
     @ResponseBody
     public CommonResult playVideo(VideoCondition videoCondition){
 
+
         Video video =  userService.selectVideo(videoCondition);
         String userAccount = video.getUserAccount();
         User user = userService.getUserByAccount(userAccount);
         String name = user.getUsername();
         video.setUsername(name);
 
+        String account = null;
+        try {
+            account = getCommonUserDetails().getAccount();
+        }catch (NullPointerException exception){
+            LOGGER.debug("当前无用户登录");
+        }
 
-        CollectCondition collectCondition = new CollectCondition();
-        collectCondition.setUserAccount(userAccount);
-        collectCondition.setVideoId(video.getId());
-        Collect collect = userService.selectCollect(collectCondition);
+        if (StringsUtils.isNotEmpty(account)){
+            CollectCondition collectCondition = new CollectCondition();
+            collectCondition.setUserAccount(account);
+            collectCondition.setVideoId(video.getId());
+            Collect collect = userService.selectCollect(collectCondition);
 
-        PraiseCondition praiseCondition = new PraiseCondition();
-        praiseCondition.setUserAccount(userAccount);
-        praiseCondition.setVideoId(video.getId());
-        Praise praise = userService.selectPraise(praiseCondition);
+            PraiseCondition praiseCondition = new PraiseCondition();
+            praiseCondition.setUserAccount(account);
+            praiseCondition.setVideoId(video.getId());
+            Praise praise = userService.selectPraise(praiseCondition);
 
-        video.setCollectStatus(collect.getCollectStatus());
-        video.setPraiseStatus(praise.getPraiseStatus());
+            if (collect != null){
+                video.setCollectStatus(collect.getCollectStatus());
+            }
+            if (praise != null){
+                video.setPraiseStatus(praise.getPraiseStatus());
+            }
+        }
+
 
         Integer watchNum = video.getWatchNum();
         video.setWatchNum(watchNum + 1);

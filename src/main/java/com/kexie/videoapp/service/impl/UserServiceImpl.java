@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
@@ -137,7 +138,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public int uploadVideo(MultipartFile videoFile, MultipartFile imageFile, Video video) {
+    public int uploadVideo(MultipartFile videoFile, MultipartFile imageFile, Video video, HttpServletRequest request) {
         User user = getUserByAccount(video.getUserAccount());
 
 
@@ -146,7 +147,8 @@ public class UserServiceImpl implements UserService {
 
         String videoFileType = videoFileName.substring(videoFileName.lastIndexOf(".") + 1);
 
-        String filePath = uploadPath + "video\\"+ user.getUsername() + "\\" + UUID.randomUUID().toString() + "\\";
+        String uuidPath = UUID.randomUUID().toString();
+        String filePath = uploadPath + "video\\"+ user.getUsername() + "\\" + uuidPath + "\\";
 
 
         File videoDestFile = new File(filePath + videoFileName);
@@ -160,8 +162,15 @@ public class UserServiceImpl implements UserService {
             imageDestFile.getParentFile().mkdirs();
         }
 
-        video.setCoverImage(filePath + imageFileName);
-        video.setVideoUrl(filePath + videoFileName);
+        String videoUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                          + "/" + "video/" + user.getUsername() + "/" + uuidPath + "/" + videoFileName;
+
+        String coverIamgeUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                               + "/" + "video/" + user.getUsername() + "/" + uuidPath + "/" + imageFileName;
+
+        video.setCoverImage(coverIamgeUrl);
+        video.setVideoPath(filePath + videoFileName);
+        video.setVideoUrl(videoUrl);
         video.setVideoType(videoFileType);
         video.setUpdateTime(new Date());
         video.setWatchNum(0);
