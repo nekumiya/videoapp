@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
         String videoFileType = videoFileName.substring(videoFileName.lastIndexOf(".") + 1);
 
         String uuidPath = UUID.randomUUID().toString();
-        String filePath = uploadPath + "video\\"+ user.getUsername() + "\\" + uuidPath + "\\";
+        String filePath = uploadPath + "video\\"+ user.getAccount() + "\\" + uuidPath + "\\";
 
 
         File videoDestFile = new File(filePath + videoFileName);
@@ -163,10 +163,10 @@ public class UserServiceImpl implements UserService {
         }
 
         String videoUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-                          + "/" + "video/" + user.getUsername() + "/" + uuidPath + "/" + videoFileName;
+                          + "/" + "video/" + user.getAccount() + "/" + uuidPath + "/" + videoFileName;
 
         String coverIamgeUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
-                               + "/" + "video/" + user.getUsername() + "/" + uuidPath + "/" + imageFileName;
+                               + "/" + "video/" + user.getAccount() + "/" + uuidPath + "/" + imageFileName;
 
         video.setCoverImage(coverIamgeUrl);
         video.setVideoPath(filePath + videoFileName);
@@ -194,6 +194,48 @@ public class UserServiceImpl implements UserService {
         }
 
         return 1;
+    }
+
+    @Override
+    public int uploadHeadImage(MultipartFile headIamge, String account, HttpServletRequest request) {
+        String filename = headIamge.getOriginalFilename();
+        String fileType = filename.substring(filename.lastIndexOf("."));
+
+        String filePath = uploadPath + "head_image\\" + account + fileType;
+        File dest = new File(filePath);
+
+        if (!dest.getParentFile().exists()){
+            dest.getParentFile().mkdirs();
+        }
+
+        String url = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                     + "/" + "head_image/" + account + fileType;
+
+        try {
+            headIamge.transferTo(dest);
+            LOGGER.debug("封面文件上传成功：{}",dest);
+        } catch (IOException e) {
+            LOGGER.error(e.toString(), e);
+            return 0;
+        }
+
+        User user = new User();
+
+        user.setAccount(account);
+        user.setHeadImage(url);
+
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andAccountEqualTo(account);
+        return userMapper.updateByExampleSelective(user, userExample);
+    }
+
+    @Override
+    public Integer updateUser(String account, User user) {
+
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andAccountEqualTo(account);
+        return userMapper.updateByExampleSelective(user,userExample);
+
     }
 
     @Override

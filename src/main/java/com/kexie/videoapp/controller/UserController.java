@@ -97,6 +97,26 @@ public class UserController {
 
     }
 
+    @ApiOperation("修改个人资料")
+    @RequestMapping(value = "/modify.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult modify(@RequestBody User user){
+        CommonResult commonResult;
+
+        String account = getCommonUserDetails().getAccount();
+        Integer count =  userService.updateUser(account,user);
+
+        if (count == 1) {
+            commonResult = CommonResult.success(user);
+            LOGGER.debug("修改个人信息成功 ： {}",user);
+        }else {
+            commonResult = CommonResult.failed("修改信息失败");
+            LOGGER.debug("修改个人信息失败 ： {}",user);
+        }
+
+        return commonResult;
+    }
+
     @ApiOperation("上传视频文件")
     @RequestMapping(value = "/uploadVideo.do",method = RequestMethod.POST)
     @ResponseBody
@@ -111,6 +131,30 @@ public class UserController {
         }
 
         int count = userService.uploadVideo(videoFile,imageFile,video,request);
+        if (count == 1){
+            commonResult = CommonResult.success("上传文件成功");
+            LOGGER.debug("upload File success");
+        } else {
+            commonResult = CommonResult.failed("操作失败");
+            LOGGER.debug("upload File failed");
+        }
+        return commonResult;
+    }
+
+    @ApiOperation("上传头像文件")
+    @RequestMapping(value = "/uploadHeadImage.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult uploadHeadImage(@RequestParam("headImage")MultipartFile headIamge, HttpServletRequest request){
+        CommonResult commonResult;
+
+        String account = getCommonUserDetails().getAccount();
+
+
+        if (headIamge.isEmpty()){
+            return CommonResult.failed("上传失败，图片文件是空的！！！");
+        }
+
+        int count = userService.uploadHeadImage(headIamge,account,request);
         if (count == 1){
             commonResult = CommonResult.success("上传文件成功");
             LOGGER.debug("upload File success");

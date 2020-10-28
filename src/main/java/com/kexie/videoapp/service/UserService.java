@@ -42,4 +42,8 @@ public interface UserService {
     Praise selectPraise(PraiseCondition praiseCondition);
 
     Integer updateVideo(Video video);
+
+    int uploadHeadImage(MultipartFile headIamge, String account, HttpServletRequest request);
+
+    Integer updateUser(String account, User user);
 }
