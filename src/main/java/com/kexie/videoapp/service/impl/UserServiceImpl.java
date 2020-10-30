@@ -5,13 +5,11 @@ import com.kexie.videoapp.common.api.CommonResult;
 import com.kexie.videoapp.common.utils.JwtTokenUtil;
 import com.kexie.videoapp.common.utils.StringsUtils;
 import com.kexie.videoapp.condition.CollectCondition;
+import com.kexie.videoapp.condition.MessageCondition;
 import com.kexie.videoapp.condition.PraiseCondition;
 import com.kexie.videoapp.condition.VideoCondition;
 import com.kexie.videoapp.dto.UserRegisterParam;
-import com.kexie.videoapp.mbg.mapper.CollectMapper;
-import com.kexie.videoapp.mbg.mapper.PraiseMapper;
-import com.kexie.videoapp.mbg.mapper.UserMapper;
-import com.kexie.videoapp.mbg.mapper.VideoMapper;
+import com.kexie.videoapp.mbg.mapper.*;
 import com.kexie.videoapp.mbg.model.*;
 import com.kexie.videoapp.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -67,6 +65,8 @@ public class UserServiceImpl implements UserService {
     private CollectMapper collectMapper;
     @Autowired
     private PraiseMapper praiseMapper;
+    @Autowired
+    private MessageMapper messageMapper;
 
 
     @Override
@@ -129,12 +129,6 @@ public class UserServiceImpl implements UserService {
         return token;
     }
 
-    @ApiOperation("修改个人资料")
-    @RequestMapping(value = "/modify.do",method = RequestMethod.POST)
-    @ResponseBody
-    public CommonResult updatePersonal(@RequestBody User user){
-        return null;
-    }
 
 
     @Override
@@ -235,6 +229,53 @@ public class UserServiceImpl implements UserService {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andAccountEqualTo(account);
         return userMapper.updateByExampleSelective(user,userExample);
+
+    }
+
+    @Override
+    public Integer createMessage(Message message) {
+        return messageMapper.insertSelective(message);
+    }
+
+    @Override
+    public List<Message> selectMessage(MessageCondition condition, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        MessageExample example = new MessageExample();
+        MessageExample.Criteria criteria = example.createCriteria();
+        if (condition.getId() != null && condition.getId() != 0){
+            criteria.andIdEqualTo(condition.getId());
+        }
+        if (condition.getObjectId() != null && condition.getObjectId() != 0){
+            criteria.andObjectIdEqualTo(condition.getObjectId());
+        }
+        if (StringsUtils.isNotEmpty(condition.getAnnouncerAccount())){
+            criteria.andAnnouncerAccountEqualTo(condition.getAnnouncerAccount());
+        }
+        if (StringsUtils.isNotEmpty(condition.getSubscriberAccount())){
+            criteria.andSubscriberAccountEqualTo(condition.getSubscriberAccount());
+        }
+        if (StringsUtils.isNotEmpty(condition.getTitle())){
+            criteria.andTitleLike("%" + condition.getTitle() + "%");
+        }
+        if (StringsUtils.isNotEmpty(condition.getContent())){
+            criteria.andContentLike("%" + condition.getContent() + "%");
+        }
+        if (StringsUtils.isNotEmpty(condition.getMsgType())){
+            criteria.andMsgTypeEqualTo(condition.getMsgType());
+        }
+        if (StringsUtils.isNotEmpty(condition.getMsgStatus())){
+            criteria.andMsgStatusEqualTo(condition.getMsgStatus());
+        }
+        if (condition.getSendTime() != null){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(condition.getSendTime());
+            calendar.add(Calendar.DAY_OF_MONTH,1);
+            Date time = calendar.getTime();
+
+            criteria.andSendTimeBetween(condition.getSendTime(),time);
+        }
+        example.setOrderByClause("send_time DESC");
+        return messageMapper.selectByExample(example);
 
     }
 

@@ -1,13 +1,11 @@
 package com.kexie.videoapp.service;
 
 import com.kexie.videoapp.condition.CollectCondition;
+import com.kexie.videoapp.condition.MessageCondition;
 import com.kexie.videoapp.condition.PraiseCondition;
 import com.kexie.videoapp.condition.VideoCondition;
 import com.kexie.videoapp.dto.UserRegisterParam;
-import com.kexie.videoapp.mbg.model.Collect;
-import com.kexie.videoapp.mbg.model.Praise;
-import com.kexie.videoapp.mbg.model.User;
-import com.kexie.videoapp.mbg.model.Video;
+import com.kexie.videoapp.mbg.model.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,4 +44,8 @@ public interface UserService {
     int uploadHeadImage(MultipartFile headIamge, String account, HttpServletRequest request);
 
     Integer updateUser(String account, User user);
+
+    Integer createMessage(Message message);
+
+    List<Message> selectMessage(MessageCondition condition, Integer pageNum, Integer pageSize);
 }

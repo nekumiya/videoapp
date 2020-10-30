@@ -4,15 +4,13 @@ import com.kexie.videoapp.common.api.CommonPage;
 import com.kexie.videoapp.common.api.CommonResult;
 import com.kexie.videoapp.common.utils.StringsUtils;
 import com.kexie.videoapp.condition.CollectCondition;
+import com.kexie.videoapp.condition.MessageCondition;
 import com.kexie.videoapp.condition.PraiseCondition;
 import com.kexie.videoapp.condition.VideoCondition;
 import com.kexie.videoapp.dto.CommonUserDetails;
 import com.kexie.videoapp.dto.UserLoginParam;
 import com.kexie.videoapp.dto.UserRegisterParam;
-import com.kexie.videoapp.mbg.model.Collect;
-import com.kexie.videoapp.mbg.model.Praise;
-import com.kexie.videoapp.mbg.model.User;
-import com.kexie.videoapp.mbg.model.Video;
+import com.kexie.videoapp.mbg.model.*;
 import com.kexie.videoapp.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -287,6 +285,69 @@ public class UserController {
 
         return CommonResult.success(video,"操作成功");
     }
+
+    @ApiOperation("用户发送评论")
+    @RequestMapping(value = "publish.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult publish(@RequestBody Message message){
+        CommonResult commonResult;
+
+        String account = getCommonUserDetails().getAccount();  //留言者account
+
+        message.setSubscriberAccount(account);
+        message.setMsgType("1");
+        message.setMsgStatus("2");
+        message.setSendTime(new Date());
+
+        Integer count = userService.createMessage(message);
+
+        if (count == 1) {
+            commonResult = CommonResult.success(message,"操作成功");
+            LOGGER.debug("发送消息成功 ： {}",message);
+        }else {
+            commonResult = CommonResult.failed("操作失败");
+            LOGGER.debug("发送消息失败 ： {}",message);
+        }
+        return commonResult;
+    }
+
+
+    @ApiOperation("获取未读消息数量及列表(可根据id查询消息)")
+    @RequestMapping(value = "getMessageList.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult getMessageList(MessageCondition condition,
+                                       @RequestParam(value = "pageNum",defaultValue = "1")
+                                       @ApiParam("页码") Integer pageNum,
+                                       @RequestParam(value = "pageSize",defaultValue = "5")
+                                       @ApiParam("每页数量") Integer pageSize){
+        CommonResult commonResult = null;
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        if (StringsUtils.isNotEmpty(condition.getTime())){
+            try {
+                Date date = simpleDateFormat.parse(condition.getTime());
+                condition.setSendTime(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String account = getCommonUserDetails().getAccount(); //被留言者account
+        condition.setAnnouncerAccount(account);
+        condition.setMsgStatus("2");
+        List<Message> messages = userService.selectMessage(condition,pageNum,pageSize);
+        for (Message message : messages) {
+            Integer objectId = message.getObjectId();
+            VideoCondition videoCondition = new VideoCondition();
+            videoCondition.setId(objectId);
+            Video video = userService.selectVideo(videoCondition);
+            message.setVideo(video);
+        }
+
+
+        return commonResult.success(CommonPage.restPage(messages),"操作成功");
+    }
+
 
 
 
