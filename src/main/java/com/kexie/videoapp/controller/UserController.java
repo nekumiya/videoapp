@@ -188,8 +188,7 @@ public class UserController {
         for (Video video : videos) {
             String userAccount = video.getUserAccount();
             User user = userService.getUserByAccount(userAccount);
-            String name = user.getUsername();
-            video.setUsername(name);
+            video.setUser(user);
         }
 
         return CommonResult.success(CommonPage.restPage(videos),"操作成功");
@@ -241,14 +240,17 @@ public class UserController {
     @ApiOperation("进入视频详情接口")
     @RequestMapping(value = "/playVideo.do",method = RequestMethod.POST)
     @ResponseBody
-    public CommonResult playVideo(VideoCondition videoCondition){
-
+    public CommonResult playVideo(VideoCondition videoCondition,
+                                  @RequestBody Message message,
+                                  @RequestParam(value = "pageNum",defaultValue = "1")
+                                  @ApiParam("页码") Integer pageNum,
+                                  @RequestParam(value = "pageSize",defaultValue = "5")
+                                  @ApiParam("每页数量") Integer pageSize){
 
         Video video =  userService.selectVideo(videoCondition);
         String userAccount = video.getUserAccount();
         User user = userService.getUserByAccount(userAccount);
-        String name = user.getUsername();
-        video.setUsername(name);
+        video.setUser(user);
 
         String account = null;
         try {
@@ -279,11 +281,29 @@ public class UserController {
 
         Integer watchNum = video.getWatchNum();
         video.setWatchNum(watchNum + 1);
+        userService.updateVideo(video);
 
-        Integer count = userService.updateVideo(video);
+        if (message.getMsgStatus().equals("1")){
+            userService.updateMessage(message);
+        }
+
+        MessageCondition messageCondition = new MessageCondition();
+        messageCondition.setObjectId(videoCondition.getId());
+        List<Message> messages = userService.selectMessage(messageCondition, pageNum, pageSize);
+
+        for (Message message1 : messages) {
+            String subscriberAccount = message1.getSubscriberAccount();
+            User subscriber = userService.getUserByAccount(subscriberAccount);
+            message1.setSubscriber(subscriber);
+        }
+        CommonPage<Message> messageCommonPage = CommonPage.restPage(messages);
+
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("data",video);
+        result.put("message",messageCommonPage);
 
 
-        return CommonResult.success(video,"操作成功");
+        return CommonResult.success(result,"操作成功");
     }
 
     @ApiOperation("用户发送评论")

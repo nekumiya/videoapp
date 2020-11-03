@@ -47,7 +47,7 @@ public class Video implements Serializable {
     @ApiModelProperty(value = "分类id")
     private Integer categoryId;
 
-    private String username; //上传视频用户的用户名
+    private User user;  //上传视频用户信息
 
     private String collectStatus; //收藏状态 ： 1.已收藏 2.未收藏
 
@@ -167,12 +167,12 @@ public class Video implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public String getUsername() {
-        return username;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getCollectStatus() {
@@ -199,6 +199,7 @@ public class Video implements Serializable {
                 ", labels='" + labels + '\'' +
                 ", description='" + description + '\'' +
                 ", coverImage='" + coverImage + '\'' +
+                ", videoPath='" + videoPath + '\'' +
                 ", videoUrl='" + videoUrl + '\'' +
                 ", videoType='" + videoType + '\'' +
                 ", updateTime=" + updateTime +
@@ -207,7 +208,7 @@ public class Video implements Serializable {
                 ", praiseNum=" + praiseNum +
                 ", userAccount='" + userAccount + '\'' +
                 ", categoryId=" + categoryId +
-                ", username='" + username + '\'' +
+                ", user=" + user +
                 ", collectStatus='" + collectStatus + '\'' +
                 ", praiseStatus='" + praiseStatus + '\'' +
                 '}';

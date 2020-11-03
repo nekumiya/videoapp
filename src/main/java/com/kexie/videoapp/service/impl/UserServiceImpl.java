@@ -280,6 +280,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Integer updateMessage(Message message) {
+        return messageMapper.updateByPrimaryKeySelective(message);
+    }
+
+    @Override
     public List<Video> selectVideos(VideoCondition condition, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);
         VideoExample example = new VideoExample();

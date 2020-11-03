@@ -48,4 +48,6 @@ public interface UserService {
     Integer createMessage(Message message);
 
     List<Message> selectMessage(MessageCondition condition, Integer pageNum, Integer pageSize);
+
+    Integer updateMessage(Message message);
 }

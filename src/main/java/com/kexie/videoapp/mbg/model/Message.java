@@ -32,6 +32,8 @@ public class Message implements Serializable {
     @ApiModelProperty(value = "发送时间")
     private Date sendTime;
 
+    private User subscriber; //留言者
+
     private Video video;
 
     public Video getVideo() {
@@ -116,6 +118,14 @@ public class Message implements Serializable {
         this.sendTime = sendTime;
     }
 
+    public User getSubscriber() {
+        return subscriber;
+    }
+
+    public void setSubscriber(User subscriber) {
+        this.subscriber = subscriber;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
@@ -128,6 +138,7 @@ public class Message implements Serializable {
                 ", msgType='" + msgType + '\'' +
                 ", msgStatus='" + msgStatus + '\'' +
                 ", sendTime=" + sendTime +
+                ", subscriber=" + subscriber +
                 ", video=" + video +
                 '}';
     }
