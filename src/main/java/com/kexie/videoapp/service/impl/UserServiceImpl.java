@@ -285,6 +285,36 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<Collect> selectCollects(CollectCondition condition, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        CollectExample example = new CollectExample();
+        CollectExample.Criteria criteria = example.createCriteria();
+        if (condition.getId() != null && condition.getId() != 0){
+            criteria.andIdEqualTo(condition.getId());
+        }
+        if (condition.getVideoId() != null && condition.getVideoId() != 0){
+            criteria.andVideoIdEqualTo(condition.getVideoId());
+        }
+        if(null != condition.getCollectTime()) {
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(condition.getCollectTime());
+            calendar.add(Calendar.DAY_OF_MONTH,1);
+            Date time = calendar.getTime();
+
+            criteria.andCollectTimeBetween(condition.getCollectTime(),time);
+        }
+        if (StringsUtils.isNotEmpty(condition.getCollectStatus())){
+            criteria.andCollectStatusEqualTo(condition.getCollectStatus());
+        }
+        if (StringsUtils.isNotEmpty(condition.getUserAccount())){
+            criteria.andUserAccountLike("%" + condition.getUserAccount() + "%");
+        }
+        example.setOrderByClause("collect_time DESC");
+        return collectMapper.selectByExample(example);
+    }
+
+    @Override
     public List<Video> selectVideos(VideoCondition condition, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);
         VideoExample example = new VideoExample();
@@ -326,7 +356,7 @@ public class UserServiceImpl implements UserService {
             criteria.andCategoryIdEqualTo(condition.getCategoryId());
         }
         if (StringsUtils.isNotEmpty(condition.getUserAccount())){
-            criteria.andUserAccountEqualTo("%" + condition.getUserAccount() + "%");
+            criteria.andUserAccountLike("%" + condition.getUserAccount() + "%");
         }
         example.setOrderByClause("update_time DESC");
         return videoMapper.selectByExample(example);

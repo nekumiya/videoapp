@@ -50,4 +50,6 @@ public interface UserService {
     List<Message> selectMessage(MessageCondition condition, Integer pageNum, Integer pageSize);
 
     Integer updateMessage(Message message);
+
+    List<Collect> selectCollects(CollectCondition collectCondition, Integer pageNum, Integer pageSize);
 }

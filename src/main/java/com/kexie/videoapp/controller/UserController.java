@@ -1,5 +1,6 @@
 package com.kexie.videoapp.controller;
 
+import com.kexie.videoapp.common.api.CommonMessage;
 import com.kexie.videoapp.common.api.CommonPage;
 import com.kexie.videoapp.common.api.CommonResult;
 import com.kexie.videoapp.common.utils.StringsUtils;
@@ -194,6 +195,39 @@ public class UserController {
         return CommonResult.success(CommonPage.restPage(videos),"操作成功");
     }
 
+    @ApiOperation("获取当前用户收藏列表")
+    @RequestMapping(value = "getCollectionList.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult getCollectionList(CollectCondition collectCondition,
+                                          @RequestParam(value = "pageNum",defaultValue = "1")
+                                          @ApiParam("页码") Integer pageNum,
+                                          @RequestParam(value = "pageSize",defaultValue = "5")
+                                          @ApiParam("每页数量") Integer pageSize){
+        String account = getCommonUserDetails().getAccount();
+        collectCondition.setUserAccount(account);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        if (StringsUtils.isNotEmpty(collectCondition.getTime())){
+            try {
+                Date date = simpleDateFormat.parse(collectCondition.getTime());
+                collectCondition.setCollectTime(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<Collect> collectList = userService.selectCollects(collectCondition,pageNum,pageSize);
+
+        for (Collect collect : collectList) {
+            Integer videoId = collect.getVideoId();
+            VideoCondition videoCondition = new VideoCondition();
+            videoCondition.setId(videoId);
+            Video video = userService.selectVideo(videoCondition);
+            collect.setVideo(video);
+        }
+
+        return CommonResult.success(CommonPage.restPage(collectList),"操作成功");
+    }
+
     @ApiOperation("视频收藏接口")
     @RequestMapping(value = "/collectVideo.do",method = RequestMethod.POST)
     @ResponseBody
@@ -333,7 +367,7 @@ public class UserController {
     }
 
 
-    @ApiOperation("获取未读消息数量及列表(可根据id查询消息)")
+    @ApiOperation("获取未读消息数量及所有消息列表(可根据id查询消息)")
     @RequestMapping(value = "getMessageList.do",method = RequestMethod.POST)
     @ResponseBody
     public CommonResult getMessageList(MessageCondition condition,
@@ -353,9 +387,9 @@ public class UserController {
             }
         }
 
+        int unread = 0;
         String account = getCommonUserDetails().getAccount(); //被留言者account
         condition.setAnnouncerAccount(account);
-        condition.setMsgStatus("2");
         List<Message> messages = userService.selectMessage(condition,pageNum,pageSize);
         for (Message message : messages) {
             Integer objectId = message.getObjectId();
@@ -363,10 +397,13 @@ public class UserController {
             videoCondition.setId(objectId);
             Video video = userService.selectVideo(videoCondition);
             message.setVideo(video);
+
+            if (message.getMsgStatus().equals("2")){
+                unread++;
+            }
         }
 
-
-        return commonResult.success(CommonPage.restPage(messages),"操作成功");
+        return commonResult.success(CommonMessage.restPage(messages,unread),"操作成功");
     }
 
 

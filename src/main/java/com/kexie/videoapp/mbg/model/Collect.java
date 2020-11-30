@@ -22,6 +22,8 @@ public class Collect implements Serializable {
 
     private Integer collectNum; //已收藏次数
 
+    private Video video;
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -72,6 +74,14 @@ public class Collect implements Serializable {
         this.collectNum = collectNum;
     }
 
+    public Video getVideo() {
+        return video;
+    }
+
+    public void setVideo(Video video) {
+        this.video = video;
+    }
+
     @Override
     public String toString() {
         return "Collect{" +
@@ -81,6 +91,7 @@ public class Collect implements Serializable {
                 ", collectTime=" + collectTime +
                 ", collectStatus='" + collectStatus + '\'' +
                 ", collectNum=" + collectNum +
+                ", video=" + video +
                 '}';
     }
 }
