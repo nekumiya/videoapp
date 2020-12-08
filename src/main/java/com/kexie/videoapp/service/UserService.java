@@ -1,9 +1,6 @@
 package com.kexie.videoapp.service;
 
-import com.kexie.videoapp.condition.CollectCondition;
-import com.kexie.videoapp.condition.MessageCondition;
-import com.kexie.videoapp.condition.PraiseCondition;
-import com.kexie.videoapp.condition.VideoCondition;
+import com.kexie.videoapp.condition.*;
 import com.kexie.videoapp.dto.UserRegisterParam;
 import com.kexie.videoapp.mbg.model.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,4 +49,10 @@ public interface UserService {
     Integer updateMessage(Message message);
 
     List<Collect> selectCollects(CollectCondition collectCondition, Integer pageNum, Integer pageSize);
+
+    Integer createAttention(Attention attention);
+
+    Attention selectAttention(AttentionCondition attentionCondition);
+
+    List<Attention> selectAttentions(AttentionCondition attentionCondition, Integer pageNum, Integer pageSize);
 }

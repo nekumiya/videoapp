@@ -4,10 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.kexie.videoapp.common.api.CommonResult;
 import com.kexie.videoapp.common.utils.JwtTokenUtil;
 import com.kexie.videoapp.common.utils.StringsUtils;
-import com.kexie.videoapp.condition.CollectCondition;
-import com.kexie.videoapp.condition.MessageCondition;
-import com.kexie.videoapp.condition.PraiseCondition;
-import com.kexie.videoapp.condition.VideoCondition;
+import com.kexie.videoapp.condition.*;
 import com.kexie.videoapp.dto.UserRegisterParam;
 import com.kexie.videoapp.mbg.mapper.*;
 import com.kexie.videoapp.mbg.model.*;
@@ -67,6 +64,8 @@ public class UserServiceImpl implements UserService {
     private PraiseMapper praiseMapper;
     @Autowired
     private MessageMapper messageMapper;
+    @Autowired
+    private AttentionMapper attentionMapper;
 
 
     @Override
@@ -312,6 +311,80 @@ public class UserServiceImpl implements UserService {
         }
         example.setOrderByClause("collect_time DESC");
         return collectMapper.selectByExample(example);
+    }
+
+    @Override
+    public Integer createAttention(Attention attention) {
+        User user = new User();
+
+        if (attention.getStatus().equals("1")){
+
+            user.setFansNum(attention.getAttentionNum() + 1);
+            updateUser(attention.getFollowAccount(),user);
+
+            return attentionMapper.insertSelective(attention);
+        }else if (attention.getStatus().equals("2")){
+
+            int i = attention.getAttentionNum() - 1;
+            if ( i <= 0){
+                i = 0;
+            }
+            user.setFansNum(i);
+            updateUser(attention.getFollowAccount(),user);
+
+            AttentionExample example = new AttentionExample();
+            AttentionExample.Criteria criteria = example.createCriteria();
+            criteria.andFansAccountEqualTo(attention.getFansAccount());
+            criteria.andFollowAccountEqualTo(attention.getFollowAccount());
+
+            return attentionMapper.deleteByExample(example);
+        }
+        return 0;
+
+    }
+
+    @Override
+    public Attention selectAttention(AttentionCondition attentionCondition) {
+        AttentionExample example = new AttentionExample();
+        AttentionExample.Criteria criteria = example.createCriteria();
+        criteria.andFansAccountEqualTo(attentionCondition.getFansAccount());
+        criteria.andFollowAccountEqualTo(attentionCondition.getFollowAccount());
+
+        List<Attention> attentionList = attentionMapper.selectByExample(example);
+        if (attentionList != null && attentionList.size()>0){
+            return attentionList.get(0);
+        }
+        return  null;
+    }
+
+    @Override
+    public List<Attention> selectAttentions(AttentionCondition condition, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum,pageSize);
+        AttentionExample example = new AttentionExample();
+        AttentionExample.Criteria criteria = example.createCriteria();
+        if (condition.getId() != null && condition.getId() != 0){
+            criteria.andIdEqualTo(condition.getId());
+        }
+        if(null != condition.getAttentionTime()) {
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(condition.getAttentionTime());
+            calendar.add(Calendar.DAY_OF_MONTH,1);
+            Date time = calendar.getTime();
+
+            criteria.andAttentionTimeBetween(condition.getAttentionTime(),time);
+        }
+        if (StringsUtils.isNotEmpty(condition.getFollowAccount())){
+            criteria.andFollowAccountEqualTo(condition.getFollowAccount());
+        }
+        if (StringsUtils.isNotEmpty(condition.getFansAccount())){
+            criteria.andFansAccountEqualTo(condition.getFansAccount());
+        }
+        if (StringsUtils.isNotEmpty(condition.getStatus())){
+            criteria.andStatusEqualTo(condition.getStatus());
+        }
+        example.setOrderByClause("attention_time DESC");
+        return attentionMapper.selectByExample(example);
     }
 
     @Override

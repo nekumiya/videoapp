@@ -723,6 +723,66 @@ public class UserExample {
             addCriterion("mail not between", value1, value2, "mail");
             return (Criteria) this;
         }
+
+        public Criteria andFansNumIsNull() {
+            addCriterion("fans_num is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumIsNotNull() {
+            addCriterion("fans_num is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumEqualTo(Integer value) {
+            addCriterion("fans_num =", value, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumNotEqualTo(Integer value) {
+            addCriterion("fans_num <>", value, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumGreaterThan(Integer value) {
+            addCriterion("fans_num >", value, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumGreaterThanOrEqualTo(Integer value) {
+            addCriterion("fans_num >=", value, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumLessThan(Integer value) {
+            addCriterion("fans_num <", value, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumLessThanOrEqualTo(Integer value) {
+            addCriterion("fans_num <=", value, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumIn(List<Integer> values) {
+            addCriterion("fans_num in", values, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumNotIn(List<Integer> values) {
+            addCriterion("fans_num not in", values, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumBetween(Integer value1, Integer value2) {
+            addCriterion("fans_num between", value1, value2, "fansNum");
+            return (Criteria) this;
+        }
+
+        public Criteria andFansNumNotBetween(Integer value1, Integer value2) {
+            addCriterion("fans_num not between", value1, value2, "fansNum");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

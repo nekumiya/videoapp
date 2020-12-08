@@ -4,10 +4,7 @@ import com.kexie.videoapp.common.api.CommonMessage;
 import com.kexie.videoapp.common.api.CommonPage;
 import com.kexie.videoapp.common.api.CommonResult;
 import com.kexie.videoapp.common.utils.StringsUtils;
-import com.kexie.videoapp.condition.CollectCondition;
-import com.kexie.videoapp.condition.MessageCondition;
-import com.kexie.videoapp.condition.PraiseCondition;
-import com.kexie.videoapp.condition.VideoCondition;
+import com.kexie.videoapp.condition.*;
 import com.kexie.videoapp.dto.CommonUserDetails;
 import com.kexie.videoapp.dto.UserLoginParam;
 import com.kexie.videoapp.dto.UserRegisterParam;
@@ -195,7 +192,7 @@ public class UserController {
         return CommonResult.success(CommonPage.restPage(videos),"操作成功");
     }
 
-    @ApiOperation("获取当前用户收藏列表")
+    @ApiOperation("获取用户收藏列表")
     @RequestMapping(value = "getCollectionList.do",method = RequestMethod.POST)
     @ResponseBody
     public CommonResult getCollectionList(CollectCondition collectCondition,
@@ -228,7 +225,70 @@ public class UserController {
         return CommonResult.success(CommonPage.restPage(collectList),"操作成功");
     }
 
-    @ApiOperation("视频收藏接口")
+    @ApiOperation("获取用户关注列表")
+    @RequestMapping(value = "getAttentionList.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult getAttentionList(AttentionCondition attentionCondition,
+                                          @RequestParam(value = "pageNum",defaultValue = "1")
+                                          @ApiParam("页码") Integer pageNum,
+                                          @RequestParam(value = "pageSize",defaultValue = "5")
+                                          @ApiParam("每页数量") Integer pageSize){
+        String account = getCommonUserDetails().getAccount();
+        attentionCondition.setFansAccount(account);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        if (StringsUtils.isNotEmpty(attentionCondition.getTime())){
+            try {
+                Date date = simpleDateFormat.parse(attentionCondition.getTime());
+                attentionCondition.setAttentionTime(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<Attention> attentionList = userService.selectAttentions(attentionCondition,pageNum,pageSize);
+
+        for (Attention attention : attentionList) {
+            String upAccount = attention.getFollowAccount();
+            User up = userService.getUserByAccount(upAccount);
+            attention.setUp(up);
+        }
+
+        return CommonResult.success(CommonPage.restPage(attentionList),"操作成功");
+    }
+
+    @ApiOperation("粉丝列表")
+    @RequestMapping(value = "getFansList.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult getFansList(AttentionCondition attentionCondition,
+                                    @RequestParam(value = "pageNum",defaultValue = "1")
+                                    @ApiParam("页码") Integer pageNum,
+                                    @RequestParam(value = "pageSize",defaultValue = "5")
+                                    @ApiParam("每页数量") Integer pageSize){
+        String account = getCommonUserDetails().getAccount();
+        attentionCondition.setFollowAccount(account);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        if (StringsUtils.isNotEmpty(attentionCondition.getTime())){
+            try {
+                Date date = simpleDateFormat.parse(attentionCondition.getTime());
+                attentionCondition.setAttentionTime(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<Attention> attentionList = userService.selectAttentions(attentionCondition,pageNum,pageSize);
+
+        for (Attention attention : attentionList) {
+            String fansAccount = attention.getFansAccount();
+            User fans = userService.getUserByAccount(fansAccount);
+            attention.setFans(fans);
+        }
+
+        return CommonResult.success(CommonPage.restPage(attentionList),"操作成功");
+
+    }
+
+    @ApiOperation("收藏接口")
     @RequestMapping(value = "/collectVideo.do",method = RequestMethod.POST)
     @ResponseBody
     public CommonResult collectVideo(@RequestBody Collect collect){
@@ -250,7 +310,29 @@ public class UserController {
     }
 
 
-    @ApiOperation("视频点赞接口")
+    @ApiOperation("关注接口")
+    @RequestMapping(value = "/followUser.do",method = RequestMethod.POST)
+    @ResponseBody
+    public CommonResult followUser(@RequestBody Attention attention){
+        CommonResult commonResult;
+        String account = getCommonUserDetails().getAccount();
+        attention.setFansAccount(account);
+        attention.setAttentionTime(new Date());
+
+        Integer count = userService.createAttention(attention);
+        attention.setAttentionNum(attention.getAttentionNum() + 1);
+        if (count == 1) {
+            commonResult = CommonResult.success(attention,"操作成功");
+            LOGGER.debug("关注成功 ： {}",attention);
+        }else {
+            commonResult = CommonResult.failed("操作失败");
+            LOGGER.debug("关注失败 ： {}",attention);
+        }
+        return commonResult;
+    }
+
+
+    @ApiOperation("点赞接口")
     @RequestMapping(value = "/praiseVideo.do",method = RequestMethod.POST)
     @ResponseBody
     public CommonResult praiseVideo(@RequestBody Praise praise){
@@ -279,7 +361,7 @@ public class UserController {
         Video video =  userService.selectVideo(videoCondition);
         String userAccount = video.getUserAccount();
         User user = userService.getUserByAccount(userAccount);
-        video.setUser(user);
+
 
         String account = null;
         try {
@@ -299,15 +381,24 @@ public class UserController {
             praiseCondition.setVideoId(video.getId());
             Praise praise = userService.selectPraise(praiseCondition);
 
+            AttentionCondition attentionCondition = new AttentionCondition();
+            attentionCondition.setFansAccount(account);
+            attentionCondition.setFollowAccount(userAccount);
+            Attention attention = userService.selectAttention(attentionCondition);
+
             if (collect != null){
                 video.setCollectStatus(collect.getCollectStatus());
             }
             if (praise != null){
                 video.setPraiseStatus(praise.getPraiseStatus());
             }
+            if (attention != null){
+                user.setAttentionStatus(attention.getStatus());
+            }
+
         }
 
-
+        video.setUser(user);
         Integer watchNum = video.getWatchNum();
         video.setWatchNum(watchNum + 1);
         userService.updateVideo(video);

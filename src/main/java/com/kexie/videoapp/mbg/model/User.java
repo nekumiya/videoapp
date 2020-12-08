@@ -31,6 +31,11 @@ public class User implements Serializable {
     @ApiModelProperty(value = "邮箱")
     private String mail;
 
+    @ApiModelProperty(value = "粉丝数")
+    private Integer fansNum;
+
+    private String attentionStatus; //粉丝关注状态 ： 1.已关注 2.未关注
+
     private static final long serialVersionUID = 1L;
 
     public Integer getId() {
@@ -105,23 +110,36 @@ public class User implements Serializable {
         this.mail = mail;
     }
 
+    public Integer getFansNum() {
+        return fansNum;
+    }
+
+    public void setFansNum(Integer fansNum) {
+        this.fansNum = fansNum;
+    }
+
+    public String getAttentionStatus() {
+        return attentionStatus;
+    }
+
+    public void setAttentionStatus(String attentionStatus) {
+        this.attentionStatus = attentionStatus;
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
-        sb.append(", username=").append(username);
-        sb.append(", account=").append(account);
-        sb.append(", password=").append(password);
-        sb.append(", type=").append(type);
-        sb.append(", phone=").append(phone);
-        sb.append(", signature=").append(signature);
-        sb.append(", headImage=").append(headImage);
-        sb.append(", mail=").append(mail);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", account='" + account + '\'' +
+                ", password='" + password + '\'' +
+                ", type='" + type + '\'' +
+                ", phone='" + phone + '\'' +
+                ", signature='" + signature + '\'' +
+                ", headImage='" + headImage + '\'' +
+                ", mail='" + mail + '\'' +
+                ", fansNum=" + fansNum +
+                ", attentionStatus='" + attentionStatus + '\'' +
+                '}';
     }
 }
